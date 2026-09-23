@@ -1,2 +1,2 @@
 # landing-website-hubble
-landing website for humble
+landing website for hubble
