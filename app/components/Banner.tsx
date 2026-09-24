@@ -6,7 +6,7 @@ import Image from 'next/image'
 function Banner({ title, tagline, image }: BannerCardProps) {
   return (
     <section className="w-full md:px-8 lg:px-12 bg-[#F9F9F9]">
-      <div className="mx-auto max-w-full border border-white/10 bg-[#F9F9F9] p-6 md:p-10 ">
+      <div className="mx-auto max-w-[1800px] border border-white/10 bg-[#F9F9F9] p-6 md:p-10 ">
         <div className="grid items-center gap-8 md:grid-cols-2 py-[120px]">
           <div className="space-y-6">
 
@@ -29,7 +29,7 @@ function Banner({ title, tagline, image }: BannerCardProps) {
             </div>
           </div>
 
-          <div className="relative flex items-center justify-center">
+          <div className="relative flex items-end justify-center">
             <Image
               src={image}
               alt="Cavli Chip Module"
