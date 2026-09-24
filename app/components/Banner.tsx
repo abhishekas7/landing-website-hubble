@@ -2,9 +2,8 @@ import React from 'react'
 import type { BannerCardProps } from '../types/banner'
 import Button from '../ui/Button'
 import Image from 'next/image'
-import chipImg from '@/public/images/chip.png'
 
-function Banner({ title, subtitle, tagline, image = chipImg }: BannerCardProps) {
+function Banner({ title, tagline, image }: BannerCardProps) {
   return (
     <section className="w-full md:px-8 lg:px-12 bg-[#F9F9F9]">
       <div className="mx-auto max-w-full border border-white/10 bg-[#F9F9F9] p-6 md:p-10 ">
@@ -12,11 +11,11 @@ function Banner({ title, subtitle, tagline, image = chipImg }: BannerCardProps) 
           <div className="space-y-6">
 
             <div className="space-y-4">
-              <h1 className="text-4xl font-bold leading-tight text-[#28242F] md:text-5xl lg:text-6xl">
+              <h1 className="text-4xl font-light leading-tight text-[#28242F] md:text-5xl lg:text-6xl">
                 {title}
               </h1>
-              <p className="text-lg text-slate-600 md:text-xl">
-                {tagline || subtitle}
+              <p className="text-lg text-[#28242F] md:text-xl">
+                {tagline}
               </p>
             </div>
 
@@ -29,9 +28,9 @@ function Banner({ title, subtitle, tagline, image = chipImg }: BannerCardProps) 
 
           <div className="relative flex items-center justify-center">
             <Image
-              src={image || chipImg}
+              src={image}
               alt="Cavli Chip Module"
-              className="rounded-lg shadow-lg object-contain"
+              className="object-contain"
               width={500}
               height={500}
               priority

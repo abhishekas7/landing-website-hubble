@@ -1,5 +1,6 @@
 import Banner from "./components/Banner";
 import Header from "./components/Header";
+import chipImg from "../public/images/chip.png";
 
 
 export default function HomePage() {
@@ -14,7 +15,7 @@ export default function HomePage() {
       <br />
       Infinite Possibilities.
     </>
-  } subtitle="IoT Connectivity & Modem Management Platform" />
+  } tagline="IoT Connectivity & Modem Management Platform" image={chipImg.src} />
     </main>
   );
 }
