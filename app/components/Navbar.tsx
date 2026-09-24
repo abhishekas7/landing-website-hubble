@@ -2,11 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import type { NavItem } from "../types/navbar";
+import Image from "next/image";
+import hubbleLogo from "@/public/images/hubble-logo.png";
 
-interface NavItem {
-  label: string;
-  href: string;
-}
 
 const navItems: NavItem[] = [
   { label: "Platform", href: "#platform" },
@@ -24,13 +23,13 @@ export default function Navbar() {
       <div className="flex items-center justify-between py-4 border-b border-[#E5DCEE]/80">
         {/* Brand / Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="flex items-center gap-1.5">
-            <span className="text-2xl font-bold tracking-tight text-[#28242F]">
-              CAVLI
-            </span>
-            <span className="text-xs font-semibold tracking-wider text-[#392259] bg-[#E5DCEE]/60 px-2 py-0.5 rounded">
-              HUBBLE
-            </span>
+          <div className="flex items-center">
+            <Image
+              src={hubbleLogo}
+              alt="Cavli Hubble"
+              className=" w-25 md:w-34 object-contain"
+              priority
+            />
           </div>
         </Link>
 
