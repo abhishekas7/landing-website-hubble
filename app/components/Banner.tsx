@@ -20,8 +20,8 @@ function Banner({ title, tagline, image }: BannerCardProps) {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button className="rounded-lg bg-cyan-500 px-6 py-3 text-base font-semibold text-white shadow-lg hover:bg-cyan-600">
-                Explore Collection
+              <Button className="rounded-lg border border-[#e5dcee] px-6 py-3 text-base font-semibold text-[#e5dcee] hover:text-[#392259] cursor-pointer hover:border-[#392259]  hover:bg-[#FFFFFF] bg-[#392259] transition-colors duration-300">
+               Consult Now
               </Button>
             </div>
           </div>
@@ -36,8 +36,11 @@ function Banner({ title, tagline, image }: BannerCardProps) {
               priority
             />
           </div>
+
         </div>
+        
       </div>
+      
     </section>
   )
 }
