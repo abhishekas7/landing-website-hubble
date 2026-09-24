@@ -11,10 +11,13 @@ function Banner({ title, tagline, image }: BannerCardProps) {
           <div className="space-y-6">
 
             <div className="space-y-4">
-              <h1 className="text-4xl font-light leading-tight text-[#28242F] md:text-5xl lg:text-6xl">
+              <h1 className="text-4xl font-light leading-tight text-[#28242F] md:text-5xl lg:text-6xl font-arimo">
                 {title}
               </h1>
-              <p className="text-lg text-[#28242F] md:text-xl">
+              <h1 className="text-4xl font-light italic leading-tight text-[#28242F] md:text-5xl lg:text-6xl font-gelasio">
+                Infinite Possibilities.
+              </h1>
+              <p className="text-lg text-[#28242F] md:text-xl font-arimo">
                 {tagline}
               </p>
             </div>
