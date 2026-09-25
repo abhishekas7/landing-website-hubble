@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import chipImg from "../public/images/chip.png";
 import ProductSection from "./components/ProductSection";
 import { products } from "./data/product";
+import ConsultSection from "./components/ConsultSection";
 
 export default function HomePage() {
   return (
@@ -26,6 +27,7 @@ export default function HomePage() {
 
       {/* PRODUCT SECTION */}
       <ProductSection products={products} />
+      <ConsultSection />
     </main>
   );
 }
