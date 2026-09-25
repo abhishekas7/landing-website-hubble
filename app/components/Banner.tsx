@@ -6,7 +6,7 @@ import Navbar from './Navbar'
 
 function Banner({ title, tagline, image }: BannerCardProps) {
   return (
-    <section className="w-full md:px-8 lg:px-12 bg-[#F9F9F9]">
+    <section className="w-full bg-[#F9F9F9]">
       <Navbar/>
       <div className="mx-auto max-w-[1800px] border border-white/10 bg-[#F9F9F9] p-6 md:p-10 ">
         <div className="grid items-center gap-8 md:grid-cols-2 py-[120px]">

@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import type { NavItem } from "../types/navbar";
 import Image from "next/image";
-import hubbleLogo from "@/public/images/hubble-logo.png";
 
 
 const navItems: NavItem[] = [
@@ -19,16 +18,17 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="w-full font-arimo" aria-label="Main Navigation">
-      <div className="flex items-center justify-between py-4 border-b border-[#E5DCEE]/80">
+    <nav className="w-full font-arimo" aria-label="Main Navigation  ">
+      <div className="flex items-center justify-between py-4 border-b border-[#E5DCEE]/80  md:px-8 lg:px-12">
         {/* Brand / Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="flex items-center">
+          <div className="flex items-center gap-1.5">
             <Image
-              src={hubbleLogo}
-              alt="Cavli Hubble"
-              className=" w-25 md:w-34 object-contain"
-              priority
+              src="/images/hubble-logo.png"
+              alt="Hubble platform"
+              width={120}
+              height={40}
+              className="h-auto w-full"
             />
           </div>
         </Link>
@@ -39,7 +39,7 @@ export default function Navbar() {
             <Link
               key={item.label}
               href={item.href}
-              className="text-sm font-medium text-[#756383] hover:text-[#392259] transition-colors duration-200"
+              className="text-sm md:text-md font-medium text-[#756383] hover:text-[#392259] transition-colors duration-200"
             >
               {item.label}
             </Link>
@@ -50,13 +50,13 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-4">
           <Link
             href="#login"
-            className="text-sm font-medium text-[#392259] hover:text-[#28242F] transition-colors px-3 py-2"
+            className="cursor-not-allowed text-sm md:text-md font-medium text-[#392259] hover:text-[#28242F] transition-colors px-3 py-2"
           >
             Sign In
           </Link>
           <Link
             href="#demo"
-            className="rounded-lg border border-[#e5dcee] px-4 py-2 text-sm font-semibold text-[#e5dcee] bg-[#392259] hover:bg-white hover:text-[#392259] hover:border-[#392259] transition-all duration-300 shadow-sm"
+            className=" cursor-not-allowed rounded-lg border border-[#e5dcee] px-4 py-2 text-sm font-semibold text-[#e5dcee] bg-[#392259] hover:bg-white hover:text-[#392259] hover:border-[#392259] transition-all duration-300 shadow-sm"
           >
             Request Demo
           </Link>
