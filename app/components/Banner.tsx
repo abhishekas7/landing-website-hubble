@@ -24,9 +24,11 @@ function Banner({ title, tagline, image }: BannerCardProps) {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button className="rounded-lg border border-[#e5dcee] px-6 py-3 text-base font-semibold text-[#e5dcee] hover:text-[#392259] cursor-pointer hover:border-[#392259]  hover:bg-[#FFFFFF] bg-[#392259] transition-colors duration-300">
-               Consult Now
-              </Button>
+              <a href="#consult">
+                <Button className="rounded-lg border border-[#e5dcee] px-6 py-3 text-base font-semibold text-[#e5dcee] hover:text-[#392259] cursor-pointer hover:border-[#392259]  hover:bg-[#FFFFFF] bg-[#392259] transition-colors duration-300">
+                 Consult Now
+                </Button>
+              </a>
             </div>
           </div>
 
