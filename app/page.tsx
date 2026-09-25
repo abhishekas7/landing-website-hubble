@@ -7,7 +7,6 @@ import { products } from "./data/product";
 export default function HomePage() {
   return (
     <main>
-      <Header />
       <Banner title={
         <>
           One Platform.

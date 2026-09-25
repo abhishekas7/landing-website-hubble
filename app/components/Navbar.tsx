@@ -18,8 +18,8 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="w-full font-arimo" aria-label="Main Navigation  ">
-      <div className="flex items-center justify-between py-4 border-b border-[#E5DCEE]/80  md:px-8 lg:px-12">
+    <nav className="w-full font-arimo" aria-label="Main Navigation ">
+      <div className="flex items-center justify-between py-4 md:px-8 lg:px-12 border-b border-[#E5DCEE]">
         {/* Brand / Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <div className="flex items-center gap-1.5">
