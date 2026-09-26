@@ -1,6 +1,6 @@
 import { chromium } from "playwright";
 
-export async function extractExhibitors() {
+export async function extractExhibitors(pageNumber?: number, limit?: number) {
   let browser;
 
   try {
@@ -108,7 +108,15 @@ export async function extractExhibitors() {
 
     console.log("navLinks", navLinks);
 
-    return { exhibitors, navLinks };
+    const currentPage = pageNumber && pageNumber > 0 ? pageNumber : 1;
+    const currentLimit = limit && limit > 0 ? limit : 20;
+    const startIndex = (currentPage - 1) * currentLimit;
+    const paginatedExhibitors =
+      limit !== undefined && limit > 0
+        ? exhibitors.slice(startIndex, startIndex + currentLimit)
+        : exhibitors;
+
+    return { exhibitors: paginatedExhibitors, navLinks, total: exhibitors.length };
   } finally {
     if (browser) {
       await browser.close();
