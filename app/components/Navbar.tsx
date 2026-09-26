@@ -18,6 +18,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
+<>
     <nav className="w-full font-arimo" aria-label="Main Navigation ">
       <div className="flex items-center justify-between py-4 md:px-8 lg:px-12 border-b border-[#E5DCEE]">
         {/* Brand / Logo */}
@@ -147,5 +148,6 @@ export default function Navbar() {
         </div>
       )}
     </nav>
+</>
   );
 }

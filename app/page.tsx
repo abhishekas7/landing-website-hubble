@@ -1,5 +1,4 @@
 import Banner from "./components/Banner";
-import Header from "./components/Header";
 import chipImg from "../public/images/chip.png";
 import ProductSection from "./components/ProductSection";
 import { products } from "./data/product";

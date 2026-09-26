@@ -30,10 +30,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${arimo.variable} ${gelasio.variable} ${inter.variable} scroll-smooth`}>
-      <Header/>
-      <Navbar/>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en">
+      <body className={`${arimo.variable} ${gelasio.variable} ${inter.variable} scroll-smooth`}>
+        <Header />
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }
