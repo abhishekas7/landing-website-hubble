@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import type { NavItem } from "../types/navbar";
 import Image from "next/image";
@@ -16,6 +16,29 @@ const navItems: NavItem[] = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [navItems, setNavItems] = useState<NavItem[]>([
+
+  ]);
+
+  console.log(navItems);
+  
+
+  // useeffect to fetch navbar items from api
+  useEffect(() => {
+    const fetchNavbarItems = async () => {
+      const res = await fetch("/api/scrape/exhibitors");
+      const data = await res.json();
+      console.log(data);
+      let navLinks: NavItem[] = data.navLinks.map((item: any) => {
+        return {
+          label: item.text,
+          href: item.href,
+        };
+      });
+      setNavItems(navLinks);
+    };
+    fetchNavbarItems();
+  }, []);
 
   return (
 <>
@@ -36,13 +59,13 @@ export default function Navbar() {
 
         {/* Desktop Navigation Links */}
         <div className="hidden md:flex items-center gap-8">
-          {navItems.map((item) => (
+          {navItems?.map((item) => (
             <Link
               key={item.label}
               href={item.href}
               className="text-sm md:text-md font-medium text-[#756383] hover:text-[#392259] transition-colors duration-200"
             >
-              {item.label}
+              {item.label} 
             </Link>
           ))}
         </div>

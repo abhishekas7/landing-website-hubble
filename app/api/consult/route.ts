@@ -7,66 +7,74 @@ export async function POST(req: Request) {
 
     if (!name?.trim() || !email?.trim() || !message?.trim()) {
       return NextResponse.json(
-        { success: false, error: "Name, email, and message are required" },
-        { status: 400 }
-      );
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json(
-        { success: false, error: "Invalid email format" },
-        { status: 400 }
-      );
-    }
-
-    const trimmedEmail = email.trim();
-
-    // Check if email already exists in the database
-    const existing = await pool.query(
-      "SELECT id FROM consultations WHERE LOWER(email) = LOWER($1) LIMIT 1",
-      [trimmedEmail]
-    );
-
-    if (existing.rows.length > 0) {
-      return NextResponse.json(
         {
           success: false,
-          error: "This email has already submitted a consultation request",
-          errors: { email: "This email has already submitted a consultation request" },
+          error: "Name, email, and message are required",
         },
         { status: 400 }
       );
     }
 
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPhone = phone?.trim() || null;
+    const trimmedCompany = company?.trim() || null;
+    const trimmedMessage = message.trim();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid email format",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Create if it doesn't exist
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS consultations (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(50),
+        company VARCHAR(255),
+        message TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Insert submitted values
     const result = await pool.query(
-      `INSERT INTO consultations (name, email, phone, company, message)
+      `INSERT INTO consultations
+        (name, email, phone, company, message)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [name.trim(), trimmedEmail, phone || null, company || null, message.trim()]
+      [
+        trimmedName,
+        trimmedEmail,
+        trimmedPhone,
+        trimmedCompany,
+        trimmedMessage,
+      ]
     );
 
-    return NextResponse.json({
-      success: true,
-      message: "Consultation submitted successfully",
-      data: result.rows[0],
-    });
-  } catch (error) {
     return NextResponse.json(
-      { success: false, error: "Failed to submit consultation" },
-      { status: 500 }
+      {
+        success: true,
+        message: "Consultation submitted successfully",
+        data: result.rows[0],
+      },
+      { status: 201 }
     );
-  }
-}
+  } catch (error) {
+    console.error("Consultation API error:", error);
 
-export async function GET() {
-  try {
-    const result = await pool.query(
-      "SELECT * FROM consultations ORDER BY id DESC"
-    );
-    return NextResponse.json({ success: true, data: result.rows });
-  } catch (error) {
     return NextResponse.json(
-      { success: false, error: "Failed to fetch consultations" },
+      {
+        success: false,
+        error: "Failed to submit consultation",
+      },
       { status: 500 }
     );
   }
