@@ -15,8 +15,8 @@ export async function POST(req: Request) {
       // Body is optional or empty
     }
 
-    const page = Math.max(1, parseInt(body?.page ?? searchParams.get("page") ?? "1", 10) || 1);
-    const limit = Math.max(1, parseInt(body?.limit ?? searchParams.get("limit") ?? "20", 10) || 20);
+    const page = Math.max(1, parseInt(String(body?.page ?? searchParams.get("page") ?? "1"), 10) || 1);
+    const limit = Math.max(1, parseInt(String(body?.limit ?? searchParams.get("limit") ?? "20"), 10) || 20);
 
     // Create tables if they don't exist
     await initDatabase();
