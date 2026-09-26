@@ -6,13 +6,13 @@ import { initDatabase } from "@/app/lib/scraper/db/initDb";
 
 export async function POST() {
   try {
-    // 1. Create tables if they don't exist
+    //Create tables if they don't exist
     await initDatabase();
 
-    // 2. Scrape website
+    //Scrape website
     const exhibitors = await extractExhibitors();
 
-    // 3. Save data
+    //Save data
     const result = await saveExhibitors(exhibitors);
 
     return NextResponse.json({
