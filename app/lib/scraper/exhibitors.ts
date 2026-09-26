@@ -19,6 +19,9 @@ export async function extractExhibitors() {
       timeout: 60000,
     });
 
+    const navBarXpath = "/html/body/vex-root/vex-catalogue-layout/vex-layout/div/mat-sidenav-container/mat-sidenav-content/vex-toolbar/div/div[1]"
+    
+
     const exhibitorsXpath =
       "/html/body/vex-root/vex-catalogue-layout/vex-layout/div/mat-sidenav-container/mat-sidenav-content/main/vex-exhibitors/vex-page-layout/vex-page-layout-content/div/div[3]/div/div";
 
@@ -26,6 +29,12 @@ export async function extractExhibitors() {
       page.locator(`xpath=${exhibitorsXpath}`);
 
     await exhibitorsContainer.waitFor({
+      state: "visible",
+      timeout: 60000,
+    });
+
+    // Wait for Angular to render the card list (<a> elements inside the container)
+    await exhibitorsContainer.locator("a").first().waitFor({
       state: "visible",
       timeout: 60000,
     });
@@ -81,7 +90,25 @@ export async function extractExhibitors() {
           })
       );
 
-    return exhibitors;
+    const navBar = page.locator(`xpath=${navBarXpath}`);
+
+    await navBar.waitFor({
+      state: "visible",
+      timeout: 60000,
+    });
+
+    // Extract all <a> items inside the nav <div>
+    const navLinks = await navBar.locator("a").evaluateAll(
+      (anchors) =>
+        anchors.map((a) => ({
+          text: a.textContent?.trim() || "",
+          href: (a as HTMLAnchorElement).href,
+        }))
+    );
+
+    console.log("navLinks", navLinks);
+
+    return { exhibitors, navLinks };
   } finally {
     if (browser) {
       await browser.close();

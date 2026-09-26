@@ -2,6 +2,7 @@
 
 import { extractExhibitors } from "../exhibitors";
 import { saveExhibitors } from "./exhibitors";
+import { saveNavLinks } from "./navLinks";
 import { initDatabase } from "./initDb";
 
 export async function startup() {
@@ -13,14 +14,16 @@ export async function startup() {
   console.log("Database initialized");
 
   // 2. Scrape website
-  const exhibitors = await extractExhibitors();
+  const { exhibitors, navLinks } = await extractExhibitors();
 
+  console.log("navLinks", navLinks);
   console.log(`Scraped ${exhibitors.length} exhibitors`);
 
   // 3. Push data to PostgreSQL
   const result = await saveExhibitors(exhibitors);
+  const navResult = await saveNavLinks(navLinks);
 
-  console.log(`Saved ${result.count} exhibitors`);
+  console.log(`Saved ${result.count} exhibitors, ${navResult.count} nav links`);
 
   console.log("Application initialization completed");
 }

@@ -57,6 +57,15 @@ export async function initDatabase() {
       );
     `);
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS nav_links (
+        id SERIAL PRIMARY KEY,
+        text VARCHAR(100) NOT NULL,
+        href TEXT NOT NULL,
+        UNIQUE (href)
+      );
+    `);
+
     await client.query("COMMIT");
 
     console.log("Database tables initialized successfully");

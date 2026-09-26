@@ -10,7 +10,7 @@ export async function POST() {
     await initDatabase();
 
     //Scrape website
-    const exhibitors = await extractExhibitors();
+    const { exhibitors, navLinks } = await extractExhibitors();
 
     //Save data
     const result = await saveExhibitors(exhibitors);
@@ -19,6 +19,7 @@ export async function POST() {
       success: true,
       scraped: exhibitors.length,
       saved: result.count,
+      navLinks,
     });
   } catch (error) {
     console.error(error);
