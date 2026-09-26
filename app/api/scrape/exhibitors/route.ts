@@ -1,29 +1,35 @@
-
 import { NextResponse } from "next/server";
-import { scrapeExhibitors } from "@/app/lib/scraper/exhibitors";    
+import { extractExhibitors } from "@/app/lib/scraper/exhibitors";
+import { saveExhibitors } from "@/app/lib/scraper/db/exhibitors";
+import { initDatabase } from "@/app/lib/scraper/db/initDb";
 
-export const runtime = "nodejs";
 
-export async function GET() {
+export async function POST() {
   try {
-    const exhibitors = await scrapeExhibitors   ();
+    // 1. Create tables if they don't exist
+    await initDatabase();
+
+    // 2. Scrape website
+    const exhibitors = await extractExhibitors();
+
+    // 3. Save data
+    const result = await saveExhibitors(exhibitors);
 
     return NextResponse.json({
       success: true,
-      count: exhibitors.length,
-      data: exhibitors,
+      scraped: exhibitors.length,
+      saved: result.count,
     });
   } catch (error) {
-    console.error("Scraping failed:", error);
+    console.error(error);
 
     return NextResponse.json(
       {
         success: false,
-        message: "Failed to scrape exhibitors",
+        message: "Failed to scrape and save exhibitors",
+        error: error instanceof Error ? error.message : String(error),
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
