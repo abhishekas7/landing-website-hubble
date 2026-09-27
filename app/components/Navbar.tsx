@@ -5,41 +5,13 @@ import Link from "next/link";
 import type { NavItem } from "../types/navbar";
 import Image from "next/image";
 
+interface NavbarProps {
+  navItems: NavItem[];
+}
 
-const navItems: NavItem[] = [
-  { label: "Platform", href: "#platform" },
-  { label: "Products", href: "#products" },
-  { label: "Connectivity", href: "#connectivity" },
-  { label: "Solutions", href: "#solutions" },
-  { label: "Pricing", href: "#pricing" },
-];
-
-export default function Navbar() {
+export default function Navbar({ navItems }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [navItems, setNavItems] = useState<NavItem[]>([
-
-  ]);
-
-  console.log(navItems);
-  
-
-  // useeffect to fetch navbar items from api
-  useEffect(() => {
-    const fetchNavbarItems = async () => {
-      const res = await fetch("/api/scrape/exhibitors");
-      const data = await res.json();
-      console.log(data);
-      let navLinks: NavItem[] = data.navLinks.map((item: any) => {
-        return {
-          label: item.text,
-          href: item.href,
-        };
-      });
-      setNavItems(navLinks);
-    };
-    fetchNavbarItems();
-  }, []);
-
+  {}
   return (
 <>
     <nav className="w-full font-arimo" aria-label="Main Navigation ">
@@ -59,6 +31,7 @@ export default function Navbar() {
 
         {/* Desktop Navigation Links */}
         <div className="hidden md:flex items-center gap-8">
+          
           {navItems?.map((item) => (
             <Link
               key={item.label}
