@@ -1,50 +1,53 @@
 services:
-  # ── PostgreSQL database ──────────────────────────────────────────────────────
   db:
     image: postgres:16-alpine
     container_name: hubble_db
     restart: unless-stopped
+
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+
     ports:
       - "${DB_PORT:-5432}:5432"
+
     volumes:
       - pgdata:/var/lib/postgresql/data
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
 
-  # ── Next.js application ──────────────────────────────────────────────────────
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: hubble_app
     restart: unless-stopped
+    shm_size: '1gb'
+
     depends_on:
       db:
         condition: service_healthy
+
     ports:
       - "3000:3000"
+
     environment:
-      # App
       NODE_ENV: production
       NEXT_PUBLIC_BASE_URL: http://localhost:3000
 
-      # Database — mirrors your .env variables
-      DB_HOST: db          # <-- service name resolves inside Docker network
+      DB_HOST: db
       DB_PORT: 5432
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
 
-      # Playwright
-      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-      PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH: /usr/bin/chromium-browser
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH: /usr/bin/chromium
 
 volumes:
   pgdata:

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { extractExhibitors } from "@/app/lib/scraper/exhibitors";
 import { saveExhibitors } from "@/app/lib/scraper/db/exhibitors";
+import { saveNavLinks } from "@/app/lib/scraper/db/navLinks";
 import { initDatabase } from "@/app/lib/scraper/db/initDb";
 
 
@@ -26,6 +27,9 @@ export async function POST(req: Request) {
 
     // Save data
     const result = await saveExhibitors(exhibitors);
+    if (navLinks && navLinks.length > 0) {
+      await saveNavLinks(navLinks);
+    }
 
     return NextResponse.json({
       success: true,

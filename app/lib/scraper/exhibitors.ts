@@ -4,10 +4,23 @@ export async function extractExhibitors(pageNumber?: number, limit?: number) {
   let browser;
 
   try {
-    browser = await chromium.launch({
-      channel: "chrome",
+    const launchOptions: Parameters<typeof chromium.launch>[0] = {
       headless: true,
-    });
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+      ],
+    };
+
+    if (process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH) {
+      launchOptions.executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
+    } else if (process.platform === "win32") {
+      launchOptions.channel = "chrome";
+    }
+
+    browser = await chromium.launch(launchOptions);
 
     const page = await browser.newPage();
 
