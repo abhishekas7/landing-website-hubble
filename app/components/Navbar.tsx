@@ -6,12 +6,13 @@ import type { NavItem } from "../types/navbar";
 import Image from "next/image";
 
 interface NavbarProps {
-  navItems: NavItem[];
+  navItems?: NavItem[];
 }
 
 export default function Navbar({ navItems }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
-  {}
+  const items = navItems && navItems.length > 0 ?navItems : []  ;
+
   return (
 <>
     <nav className="w-full font-arimo" aria-label="Main Navigation ">
@@ -32,7 +33,7 @@ export default function Navbar({ navItems }: NavbarProps) {
         {/* Desktop Navigation Links */}
         <div className="hidden md:flex items-center gap-8">
           
-          {navItems?.map((item) => (
+          {items.map((item) => (
             <Link
               key={item.label}
               href={item.href}
@@ -114,7 +115,7 @@ export default function Navbar({ navItems }: NavbarProps) {
           id="mobile-menu"
         >
           <div className="flex flex-col space-y-2 py-3 border-b border-[#E5DCEE]/60">
-            {navItems.map((item) => (
+            {items.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}

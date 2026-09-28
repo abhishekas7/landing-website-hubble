@@ -43,12 +43,14 @@ export default async function RootLayout({
   try {
     // Scraper returns { text, href } but NavItem expects { label, href } — map here
     const exhibitors = await apiService.get<{ navLinks?: { text: string; href: string }[] }>(
-      `${baseUrl}/api/scrape/exhibitors?page=2&limit=20`
+      `${baseUrl}/api/scrape/exhibitors`
     );
-    navLinks = (exhibitors?.navLinks ?? []).map((item) => ({
-      label: item.text,
-      href: item.href,
-    }));
+    navLinks = (exhibitors?.navLinks ?? [])
+      .filter((item) => item.text && item.text.trim().length > 0)
+      .map((item) => ({
+        label: item.text.trim(),
+        href: item.href,
+      }));
     console.log("Exhibitors navLinks:", navLinks);
   } catch (err) {
     console.error("Failed to fetch nav links:", err);

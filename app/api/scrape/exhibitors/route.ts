@@ -20,15 +20,25 @@ export async function POST(req: Request) {
     const limit = Math.max(1, parseInt(String(body?.limit ?? searchParams.get("limit") ?? "20"), 10) || 20);
 
     // Create tables if they don't exist
-    await initDatabase();
+    try {
+      await initDatabase();
+    } catch (dbErr) {
+      console.warn("DB init warning:", dbErr instanceof Error ? dbErr.message : dbErr);
+    }
 
     // Scrape website with pagination
     const { exhibitors, navLinks, total } = await extractExhibitors(page, limit);
 
-    // Save data
-    const result = await saveExhibitors(exhibitors);
-    if (navLinks && navLinks.length > 0) {
-      await saveNavLinks(navLinks);
+    // Save data to DB (non-fatal if DB is offline or busy)
+    let savedCount = 0;
+    try {
+      const result = await saveExhibitors(exhibitors);
+      savedCount = result.count;
+      if (navLinks && navLinks.length > 0) {
+        await saveNavLinks(navLinks);
+      }
+    } catch (dbErr) {
+      console.error("DB save error:", dbErr instanceof Error ? dbErr.message : dbErr);
     }
 
     return NextResponse.json({
@@ -37,7 +47,7 @@ export async function POST(req: Request) {
       limit,
       total: total ?? exhibitors.length,
       scraped: exhibitors.length,
-      saved: result.count,
+      saved: savedCount,
       exhibitors: exhibitors,
       navLinks,
     });
