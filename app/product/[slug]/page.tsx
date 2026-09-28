@@ -35,8 +35,6 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  console.log(params, "params");
-
   const { slug } = await params;
   const product = getProductBySlug(slug);
 
