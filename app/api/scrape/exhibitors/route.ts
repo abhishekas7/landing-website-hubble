@@ -3,7 +3,7 @@ import { extractExhibitors } from "@/app/lib/scraper/exhibitors";
 import { saveExhibitors } from "@/app/lib/scraper/db/exhibitors";
 import { saveNavLinks } from "@/app/lib/scraper/db/navLinks";
 import { initDatabase } from "@/app/lib/scraper/db/initDb";
-
+import pool from "@/app/lib/db";
 
 export async function POST(req: Request) {
   try {
@@ -66,5 +66,26 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
-  return POST(req);
+  try {
+    console.log("fetching nav-links");
+    let navLinks = await pool.query(`
+      SELECT * FROM nav_links
+    `);
+    return NextResponse.json({
+      success: true,
+      message: "Scrape and save exhibitors",
+      navLinks: navLinks.rows,
+    });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to initialize database",
+        error: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
+  }
 }
+

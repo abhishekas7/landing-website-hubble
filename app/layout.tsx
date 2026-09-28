@@ -32,26 +32,40 @@ export const metadata: Metadata = {
     "Cavli Hubble is a comprehensive IoT connectivity and modem management platform that centralizes device management across LPWAN, LTE, 5G, and legacy networks using integrated eSIM technology.",
 };
 
+async function getExhitorsData() {
+  // Fetch data directly from a database or secure API
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/scrape/exhibitors`, { cache: 'no-store' });
+  const data = await res.json();
+  return data
+}
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  console.log(baseUrl);
+  
 
-  let navLinks: { label: string; href: string }[] = [];
+  let updatedNavLinks: { label: string; href: string }[] = [];
+
   try {
-    // Scraper returns { text, href } but NavItem expects { label, href } — map here
-    const exhibitors = await apiService.get<{ navLinks?: { text: string; href: string }[] }>(
-      `${baseUrl}/api/scrape/exhibitors`
-    );
-    navLinks = (exhibitors?.navLinks ?? [])
-      .filter((item) => item.text && item.text.trim().length > 0)
-      .map((item) => ({
-        label: item.text.trim(),
-        href: item.href,
-      }));
-    console.log("Exhibitors navLinks:", navLinks);
+    
+    const exhibitorsData = await getExhitorsData();
+    const {exhibitors,navLinks,events,halls,total} = exhibitorsData
+    
+
+    updatedNavLinks = navLinks.map((link: { text: string; href: string }) => {
+      return {
+        label: link.text,
+        href: link.href,
+      }
+    })
+
+    
+    
+    
   } catch (err) {
     console.error("Failed to fetch nav links:", err);
   }
@@ -62,7 +76,7 @@ export default async function RootLayout({
         className={`${arimo.variable} ${gelasio.variable} ${inter.variable} scroll-smooth`}
       >
         <Header />
-        <Navbar navItems={navLinks}/>
+        <Navbar navItems={updatedNavLinks}/>
 
         {children}
       </body>

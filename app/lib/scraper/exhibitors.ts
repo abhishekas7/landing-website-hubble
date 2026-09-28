@@ -4,10 +4,19 @@ export async function extractExhibitors(pageNumber?: number, limit?: number) {
   let browser;
 
   try {
+    const executablePath =
+      process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
+
     browser = await chromium.launch({
-      channel: "chrome",
       headless: true,
+      ...(executablePath ? { executablePath } : {}),
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
     });
+
 
     const page = await browser.newPage();
 
@@ -20,7 +29,7 @@ export async function extractExhibitors(pageNumber?: number, limit?: number) {
     });
 
     const navBarXpath = "/html/body/vex-root/vex-catalogue-layout/vex-layout/div/mat-sidenav-container/mat-sidenav-content/vex-toolbar/div/div[1]"
-    
+
 
     const exhibitorsXpath =
       "/html/body/vex-root/vex-catalogue-layout/vex-layout/div/mat-sidenav-container/mat-sidenav-content/main/vex-exhibitors/vex-page-layout/vex-page-layout-content/div/div[3]/div/div";
@@ -106,7 +115,6 @@ export async function extractExhibitors(pageNumber?: number, limit?: number) {
         }))
     );
 
-    console.log("navLinks", navLinks);
 
     const currentPage = pageNumber && pageNumber > 0 ? pageNumber : 1;
     const currentLimit = limit && limit > 0 ? limit : 20;
@@ -117,9 +125,10 @@ export async function extractExhibitors(pageNumber?: number, limit?: number) {
         : exhibitors;
 
     return { exhibitors: paginatedExhibitors, navLinks, total: exhibitors.length };
-  } finally {
-    if (browser) {
-      await browser.close();
-    }
+  } 
+  finally {
+  if (browser) {
+    await browser.close();
   }
+}
 }
