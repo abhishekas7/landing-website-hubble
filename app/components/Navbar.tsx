@@ -36,7 +36,7 @@ export default function Navbar({ navItems }: NavbarProps) {
           {items.map((item) => (
             <Link
               key={item.label}
-              href={item.href}
+              href={"#"}
               className="text-sm md:text-md font-medium text-[#756383] hover:text-[#392259] transition-colors duration-200"
             >
               {item.label} 

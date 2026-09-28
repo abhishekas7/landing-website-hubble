@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 function Banner({ title, tagline, image }: BannerCardProps) {
   return (
-    <section className="w-full bg-[url('/images/cavilwallpaper.jpg')] bg-cover bg-center bg-no-repeat">
+    <section className="w-full bg-[url('/images/cavilwallpaper.jpg')] bg-cover bg-center bg-no-repeat border-t border-[#a88ecd]">
       <div className="mx-auto max-w-[1800px] border border-white/10  p-6 md:p-10 ">
         <div className="grid items-center gap-8 md:grid-cols-2 md:py-[120px]">
           <div className="space-y-6">
@@ -34,7 +34,7 @@ function Banner({ title, tagline, image }: BannerCardProps) {
             <Image
               src={image}
               alt="Cavli Chip Module"
-              className="object-contain"
+              className="object-contain hidden"
               width={500}
               height={500}
               priority
