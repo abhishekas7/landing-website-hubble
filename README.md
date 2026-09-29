@@ -2,6 +2,8 @@
 
 > **IoT Connectivity & Modem Management Platform** — a Next.js landing page with a built-in Playwright web scraper that seeds its own navigation from a live trade-show catalogue and stores structured exhibitor data in PostgreSQL.
 
+**Demo / Video:** [Watch on Google Drive](https://drive.google.com/file/d/1y6geg3x12tErd4Zhm64nhvZhBxBTGBir/view?usp=drive_link)
+
 ---
 
 ## Table of Contents
