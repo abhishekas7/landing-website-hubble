@@ -12,7 +12,8 @@
 4. [Environment Variables](#environment-variables)
 5. [Database Schema](#database-schema)
 6. [Triggering the Scraper](#triggering-the-scraper)
-7. [Project Structure](#project-structure)
+7. [Consult / Contact Form API](#consult--contact-form-api)
+8. [Project Structure](#project-structure)
 
 ---
 
@@ -184,11 +185,25 @@ All tables are created automatically on the first `POST /api/scrape/exhibitors` 
  id   (PK)                         │  │  event_id (FK) ──▶ events.id
  text                               └──┘  hall_no
  href UNIQUE
+
+ consultations   (standalone — created by POST /api/consult)
+ ─────────────
+ id         (PK)
+ name
+ email
+ phone
+ company
+ message
+ created_at
 ```
 
 ---
 
 ### Table Descriptions
+
+Third normal form is a key concept of database normalization that removes unwanted dependencies. 3NF builds upon first normal form (1NF) and second normal form (2NF), meaning that it inherits their rules: 1NF requires atomic (indivisible) values in each cell, and 2NF removes partial dependencies on a composite primary key. 3NF takes it further by removing transitive dependencies, a situation where non-key attributes depend indirectly on the primary key.
+
+By focusing on this, 3NF ensures that each non-key column in a table is directly tied to the primary key and nothing else. In more practical terms, 3NF helps minimize redundancy and avoid anomalies when inserting, updating, or deleting data.
 
 #### `countries`
 
@@ -283,6 +298,27 @@ Navigation items scraped from the catalogue site's top nav bar. These are read b
 
 ---
 
+#### `consultations`
+
+Stores contact/consultation requests submitted via the **"Talk to us"** form on the landing page. This table is **not** part of `initDatabase()` — it is created automatically (lazily) on the first `POST /api/consult` call.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `id` | `SERIAL` | `PRIMARY KEY` | Auto-increment surrogate key |
+| `name` | `VARCHAR(255)` | `NOT NULL` | Submitter's full name |
+| `email` | `VARCHAR(255)` | `NOT NULL` | Contact email address |
+| `phone` | `VARCHAR(50)` | — | Optional phone number |
+| `company` | `VARCHAR(255)` | — | Optional company / organisation |
+| `message` | `TEXT` | `NOT NULL` | The enquiry or message body |
+| `created_at` | `TIMESTAMP` | `DEFAULT CURRENT_TIMESTAMP` | UTC timestamp of submission |
+
+**Validation** (enforced in the API before any DB write):
+- `name`, `email`, and `message` are **required** — returns `400` if missing.
+- `email` is validated against a basic RFC-style regex — returns `400` on bad format.
+- `phone` and `company` are optional and stored as `NULL` when omitted.
+
+---
+
 ## Triggering the Scraper
 
 The scraper launches a **headless Chromium browser** via Playwright, navigates to the live MMI Connect catalogue, waits for Angular to hydrate, then extracts exhibitor cards and nav links. It runs **on demand** only — never on page load.
@@ -308,7 +344,8 @@ curl -X POST http://localhost:3000/api/scrape/exhibitors \
 POST /api/scrape/exhibitors
     │
     ├─ 1. initDatabase()
-    │      CREATE TABLE IF NOT EXISTS for all 6 tables
+    │      CREATE TABLE IF NOT EXISTS for all 7 scraper tables
+    │      (countries, events, companies, halls, booths, exhibitors, nav_links)
     │
     ├─ 2. extractExhibitors(page, limit)
     │      → Playwright launches headless Chromium
@@ -357,6 +394,60 @@ curl http://localhost:3000/api/scrape/exhibitors
 ### Re-running safely
 
 All inserts use `ON CONFLICT ... DO UPDATE` (upsert) or `DO NOTHING`. Running the scraper multiple times is **safe** — no duplicate rows will be created.
+
+---
+
+## Consult / Contact Form API
+
+The `POST /api/consult` endpoint handles form submissions from the **ConsultSection** component. It lazily creates the `consultations` table on first use.
+
+### Request
+
+```bash
+curl -X POST http://localhost:3000/api/consult \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "phone": "+91 98765 43210",
+    "company": "Acme IoT",
+    "message": "We are interested in Hubble connectivity solutions."
+  }'
+```
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| `name` | yes | Trimmed; `400` if blank |
+| `email` | yes | Validated with regex; `400` if invalid |
+| `message` | yes | Trimmed; `400` if blank |
+| `phone` | No | Stored as `NULL` if omitted |
+| `company` | No | Stored as `NULL` if omitted |
+
+### Success Response (`201`)
+
+```json
+{
+  "success": true,
+  "message": "Consultation submitted successfully",
+  "data": {
+    "id": 1,
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "phone": "+91 98765 43210",
+    "company": "Acme IoT",
+    "message": "We are interested in Hubble connectivity solutions.",
+    "created_at": "2026-09-29T04:30:00.000Z"
+  }
+}
+```
+
+### Error Responses
+
+| Status | Condition |
+|--------|-----------|
+| `400` | Missing required field (`name`, `email`, or `message`) |
+| `400` | Malformed email address |
+| `500` | Database / server error |
 
 ---
 
