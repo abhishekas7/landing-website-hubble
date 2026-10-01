@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { arimo, gelasio, inter } from "./fonts";
+import OurTrustBussiness from "./components/OurTrustBussiness";
 
 
 export const metadata: Metadata = {
@@ -32,14 +33,14 @@ export default async function RootLayout({
 }) {
 
 
-    const exhibitorsData = await getExhibitorsData();
-    const exhibitorList = exhibitorsData?.data?.exhibitors ?? [];
-    const navLinks = exhibitorsData?.data?.navLinks ?? [];
+  const exhibitorsData = await getExhibitorsData();
+  const exhibitorList = exhibitorsData?.data?.exhibitors ?? [];
+  const navLinks = exhibitorsData?.data?.navLinks ?? [];
 
-    let formattedNavLinks = navLinks.map((link: any) => ({
-      label: link.text,
-      href: link.href.replace(/\/app\//g, '/')
-    }));
+  let formattedNavLinks = navLinks.map((link: any) => ({
+    label: link.text,
+    href: link.href.replace(/\/app\//g, '/')
+  }));
 
   return (
     <html lang="en">
@@ -50,6 +51,7 @@ export default async function RootLayout({
         <Navbar navItems={formattedNavLinks} />
 
         {children}
+        <OurTrustBussiness />
         <Footer exhibitors={exhibitorList} />
       </body>
     </html>

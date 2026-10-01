@@ -14,6 +14,7 @@ import {
   RiApps2Line,
   RiListSettingsLine,
 } from "react-icons/ri";
+import ModelRender from "@/app/components/ModelRender";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -70,53 +71,14 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-white text-[#28242F] font-inter">
-      {/* Top Breadcrumb Bar */}
-      <nav
-        aria-label="Breadcrumb"
-        className="w-full border-b border-[#E5DCEE] bg-[#FAF7FC]/80 backdrop-blur-sm sticky top-0 z-30"
-      >
-        <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16 py-3.5 flex items-center justify-between text-xs sm:text-sm">
-          <ol className="flex items-center space-x-2 text-[#756383]">
-            <li>
-              <Link
-                href="/"
-                className="hover:text-[#392259] transition-colors duration-200 font-medium"
-              >
-                Home
-              </Link>
-            </li>
-            <li className="text-[#BCAEC9]">/</li>
-            <li>
-              <Link
-                href="/#features"
-                className="hover:text-[#392259] transition-colors duration-200 font-medium"
-              >
-                Products
-              </Link>
-            </li>
-            <li className="text-[#BCAEC9]">/</li>
-            <li className="text-[#392259] font-semibold truncate max-w-[200px] sm:max-w-xs">
-              {product.name}
-            </li>
-          </ol>
 
-          <Link
-            id="back-to-products-btn"
-            href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#392259] hover:text-[#756383] transition-colors duration-200"
-          >
-            <RiArrowLeftLine size={16} />
-            <span className="hidden sm:inline">Back to Overview</span>
-          </Link>
-        </div>
-      </nav>
 
       {/* Hero Header Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#FAF7FC] via-[#FAF7FC]/60 to-white border-b border-[#E5DCEE]">
         <div className="absolute inset-0 bg-[radial-gradient(#392259_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.03] pointer-events-none" />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-16 sm:px-10 lg:px-16 lg:py-20">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
+        <div className="relative mx-auto max-[1800px] px-6 py-16 sm:px-10 lg:px-16 lg:py-20">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10 p-[40px]">
             {/* Title & Description */}
             <div className="flex-1 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAE0F5] text-xs font-semibold text-[#392259] uppercase tracking-wider">
@@ -154,20 +116,15 @@ export default async function ProductDetailPage({ params }: PageProps) {
             </div>
 
             {/* Product Icon & Visual Badge */}
-            <div className="shrink-0 flex items-center justify-center lg:justify-end">
-              <div className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-3xl bg-white border border-[#E5DCEE] shadow-xl flex items-center justify-center text-[#392259] p-8">
-                <div className="absolute -inset-2 bg-gradient-to-tr from-[#FAF7FC] to-[#EAE0F5] rounded-3xl -z-10 blur-sm opacity-60"></div>
-                <div className="text-5xl sm:text-6xl text-[#392259] transform transition-transform duration-300 hover:scale-110">
-                  {product.image}
-                </div>
-              </div>
+            <div className="shrink-0 flex items-center  justify-center lg:justify-end bg-[transparent] rounded-2xl p-4 lg:p-6 border border-[#E5DCEE] shadow-sm">
+       <ModelRender />
             </div>
           </div>
         </div>
       </section>
 
       {/* Main Content Area */}
-      <div className="mx-auto max-w-[1600px] px-6 py-16 sm:px-10 lg:px-20">
+      <div className="mx-auto max-w-[1600px] py-16 sm:px-10 ">
         {/* Overview & Quick Specs Grid */}
         <section aria-labelledby="section-overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

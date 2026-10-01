@@ -5,8 +5,9 @@ import Link from "next/link";
 
 function productCard({ id, name, description, image }: Product) {
   return (
-    <div className='w-[300px] h-[auto] bg-white rounded-lg p-4 flex flex-col transition-all duration-300 hover:shadow-2xl border border-[#E5DCEE] mt-[20px]'>
-      <div className='w-full h-[auto]  rounded-lg flex items-start justify-between'>
+    <div className='group relative w-[300px] h-[auto] bg-white rounded-lg p-4 flex flex-col transition-all duration-300 hover:shadow-2xl border border-[#E5DCEE] mt-[20px] hover:scale-[1.02] overflow-hidden hover:border-[#392259]'>
+      <div className="pointer-events-none absolute bottom-[4px] right-[-30px] h-[80px] w-[80px] origin-bottom-right scale-0 rounded-full bg-[#e5e5e57a] opacity-0 transition-all duration-500 ease-out group-hover:scale-100 group-hover:opacity-100"></div>
+      <div className='w-full h-[auto]  rounded-lg flex items-start justify-between mb-4'>
         <div className='w-[80px] h-[80px]  rounded-full flex items-center justify-center mb-4 border border-[#E5DCEE]'>
           {image}
         </div>
@@ -14,10 +15,9 @@ function productCard({ id, name, description, image }: Product) {
         <RiArrowRightUpLine  size={24} className='text-[#392259] cursor-pointer hover:text-[#756383] transition-colors duration-200'/></Link>
       </div>
 
-      <h1 className='text-[#392259] text-lg md:text-xl font-semibold mb-2 text-left font-arimo'>{name}</h1>
-      <p className='text-[#756383] text-sm mb-4 text-left font-inter'>{description}</p>
+      <h1 className='group-hover:text-[#392259]  text-lg md:text-xl font-semibold mb-2 text-left font-arimo'>{name}</h1>
+      <p className='text-[#756383]  text-[16px] mb-4 text-left font-inter'>{description}</p>
     </div>
   )
 }
-
 export default productCard

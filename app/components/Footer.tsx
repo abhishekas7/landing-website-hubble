@@ -12,9 +12,10 @@ const Footer = ({ exhibitors = [] }: FooterProps) => {
     <footer className="bg-gradient-to-b from-black to-[#392259] text-[#e5dcee] py-8 px-6 mt-10 font-arimo">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
-          <p className="text-lg font-semibold text-white">Cavli Hubble</p>
-          <p className="text-sm mt-2">IoT Connectivity &amp; Modem Management Platform</p>
+          <p className="text-lg font-semibold text-white">Cavli Hubble <sup>&trade;</sup></p>
+          <p className="text-sm mt-2">A connectivity and IoT module management platform enabling seamless, secure, and cost-effective cellular connectivity.</p>
         </div>
+        
         
         {exhibitors.length > 0 && (
           <div>
@@ -31,11 +32,9 @@ const Footer = ({ exhibitors = [] }: FooterProps) => {
           </div>
         )}
 
-        <div className="flex flex-col space-y-2 md:items-end">
-          <p className="text-lg font-semibold text-white mb-2">Legal</p>
-          <a href="#" className="text-sm hover:text-white transition-colors">Privacy Policy</a>
-          <a href="#" className="text-sm hover:text-white transition-colors">Terms of Service</a>
-          <a href="#" className="text-sm hover:text-white transition-colors">Contact</a>
+        <div className="flex flex-col space-y-2 md:items-start">
+          <p className="text-lg font-semibold text-white mb-2">About Cavil</p>
+          <p  className="text-sm hover:text-white transition-colors">Cavli Wireless designs and manufactures cellular IoT modules with optional integrated eSIM and global connectivity powered by Cavli Hubble™.</p>
         </div>
       </div>
       <div className="mt-8 pt-4 border-t border-[#805d9a] text-sm text-center">
