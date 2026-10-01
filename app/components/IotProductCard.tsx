@@ -1,4 +1,5 @@
 import Image, { StaticImageData } from "next/image";
+import Link from "next/link";
 import React from "react";
 
 type Props = {
@@ -6,9 +7,10 @@ type Props = {
   title: string;
   subtitle: string;
   desc: string;
+  slug: string;
 };
 
-function IotProductCard({ imgLink, title, subtitle, desc }: Props) {
+function IotProductCard({ imgLink, title, subtitle, desc, slug }: Props) {
   return (
     <div className="group w-full max-w-sm overflow-hidden rounded-2xl border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
       {/* Image */}
@@ -35,12 +37,13 @@ function IotProductCard({ imgLink, title, subtitle, desc }: Props) {
           {desc}
         </p>
 
-        <button className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gray-900 transition-colors hover:text-blue-600">
+        <Link
+          href={`/iot-module/${slug}`}
+          className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gray-900 transition-colors hover:text-[#392259]"
+        >
           Learn more
-          <span className="transition-transform group-hover:translate-x-1">
-            →
-          </span>
-        </button>
+          <span className="transition-transform group-hover:translate-x-1">→</span>
+        </Link>
       </div>
     </div>
   );

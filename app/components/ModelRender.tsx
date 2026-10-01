@@ -1,33 +1,54 @@
 "use client"; // Required for Next.js to handle browser-only WebGL APIs
 
-import React, { Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, useGLTF } from '@react-three/drei';
+import React, { Suspense, useState } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, useGLTF } from "@react-three/drei";
+import ModelRenderLoading from "./ModelRenderLoading";
 
-// 1. The dedicated Model component
-function Model() {
-  // Path points directly into your public folder
-  const { scene } = useGLTF('/models/chip-model.glb'); 
-  
-  // Use primitive to inject the loaded scene object into the component tree
+const MODEL_PATH = "/models/chip-model.glb";
+const LOADING_IMAGE = "/images/chips/C41_QS_temp.webp";
+
+
+useGLTF.preload(MODEL_PATH);
+
+// ── Model ──────────────────────────────────────────────────────────────────────
+function Model({ onLoaded }: { onLoaded: () => void }) {
+  const { scene } = useGLTF(MODEL_PATH);
+
+  // Called once Suspense resolves and this component first renders
+  React.useEffect(() => {
+    onLoaded();
+  }, [onLoaded]);
+
   return <primitive object={scene} scale={20} position={[0, -2, 0]} />;
 }
 
-// 2. The main Page/Scene component wrapping the Canvas
+// ── Scene ──────────────────────────────────────────────────────────────────────
 export default function ModelRender() {
-  return (
-    <div style={{ width: '30vw', height: '50vh', background: 'transparent' }}>
-      <Canvas  >
-        {/* Lights are required so the model isn't pitch black */}
-        <directionalLight position={[10, 10, 5]} intensity={1} />       
-        {/* Suspense handles the asynchronous loading state of the file */}
-        <Suspense fallback={"loading"}>
-          <Model />
-        </Suspense>
+  const [loaded, setLoaded] = useState(false);
 
-        {/* OrbitControls allows dragging to rotate and scrolling to zoom */}
+  return (
+    <div
+      className="relative"
+      style={{ width: "30vw", height: "50vh" }}
+    >
+      {/* Canvas always mounts — avoids a hard layout swap */}
+      <Canvas style={{ background: "transparent" }}>
+        <directionalLight position={[10, 10, 5]} intensity={1} />
+        <Suspense fallback={null}>
+          <Model onLoaded={() => setLoaded(true)} />
+        </Suspense>
         <OrbitControls enablePan={true} enableZoom={true} />
       </Canvas>
+
+      {/* Loading overlay — fades out once the model signals it's ready */}
+      <div
+        className={`absolute inset-0 transition-opacity duration-700 ${
+          loaded ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
+      >
+        <ModelRenderLoading image={LOADING_IMAGE} />
+      </div>
     </div>
   );
 }

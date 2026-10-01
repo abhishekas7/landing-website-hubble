@@ -22,9 +22,46 @@ export interface Product {
 }
 
 export interface iotModuleProductTypes {
-  id: number;
-  name: string;
-  subtitle: string;
-  desc: string;
-  imageLink: string;
+    id: number;
+    name: string;
+    subtitle: string;
+    desc: string;
+    imageLink: string;
+    detailsView: IotModuleDetailsView;
+}
+
+export interface IotModuleDetailsView {
+    title: string;
+    des: string;
+    whatIs: string;
+    chip: IotModuleChip[];
+}
+
+export interface IotModuleChip {
+    name: string;
+    imgUrl: string;
+    types: string[];
+
+    cellularBands: {
+        [region: string]:
+            | string
+            | {
+                  LTE?: string;
+                  NR?: string;
+                  NTN?: string;
+              };
+    };
+
+    os: string;
+
+    interfaces: string[];
+
+    speeds: {
+        [technology: string]: {
+            download: string;
+            upload: string;
+        };
+    };
+
+    keyHighlights: string[];
 }

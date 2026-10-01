@@ -6,6 +6,7 @@ import Autoplay from "embla-carousel-autoplay";
 import IotProductCard from "./IotProductCard";
 import { iotModuleProducts } from "../data/productPageDatas";
 import { iotModuleProductTypes } from "../types/product";
+import { toIotSlug } from "../utils/iotSlug";
 
 type Props = {};
 
@@ -42,7 +43,7 @@ function IotModules({ }: Props) {
         IoT Modules
       </h1>
 
-      <p className="mx-auto mb-10 max-w-[1600px] text-left text-lg text-[#392259]">
+      <p className="mx-auto mb-10 max-w-[1800px] text-left text-lg text-[#392259] mb-3">
         The platform streamlines modem onboarding, data plan management, and
         OTA updates, enabling our clients to activate and manage eSIM-enabled
         modems deployed anywhere in the world with minimal field intervention.
@@ -61,10 +62,7 @@ function IotModules({ }: Props) {
               <div
                 key={product.id}
                 className="
-                  min-w-0
-                  flex-[0_0_100%]
-                  sm:flex-[0_0_50%]
-                  lg:flex-[0_0_33.333%]
+                  min-w-[500px]
                 "
               >
                 <IotProductCard
@@ -72,6 +70,7 @@ function IotModules({ }: Props) {
                   title={product.name}
                   subtitle={product.subtitle}
                   desc={product.desc}
+                  slug={toIotSlug(product.name)}
                 />
               </div>
             ))}
