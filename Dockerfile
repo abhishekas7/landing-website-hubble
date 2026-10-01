@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────
 # Stage 1 — Builder
 # ─────────────────────────────────────────────
-FROM node:20-slim AS builder
+FROM node:22-slim AS builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ RUN yarn build
 # ─────────────────────────────────────────────
 # Stage 2 — Runner
 # ─────────────────────────────────────────────
-FROM node:20-slim AS runner
+FROM node:22-slim AS runner
 
 WORKDIR /app
 

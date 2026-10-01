@@ -35,6 +35,7 @@ const Footer = ({ exhibitors = [] }: FooterProps) => {
         <div className="flex flex-col space-y-2 md:items-start">
           <p className="text-lg font-semibold text-white mb-2">About Cavil</p>
           <p  className="text-sm hover:text-white transition-colors">Cavli Wireless designs and manufactures cellular IoT modules with optional integrated eSIM and global connectivity powered by Cavli Hubble™.</p>
+          <p className="text-sm">INDIA |  Headquarters - California, USA </p>
         </div>
       </div>
       <div className="mt-8 pt-4 border-t border-[#805d9a] text-sm text-center">
