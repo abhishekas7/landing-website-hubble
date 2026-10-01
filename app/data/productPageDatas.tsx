@@ -104,7 +104,7 @@ export const iotModuleProducts: iotModuleProductTypes[] = [
             chip: [
                 {
                     name: "C10QM",
-                    imgUrl: "",
+                    imgUrl: "/images/chips/C10QM.webp",
                     types: [
                         "LTE Cat 1",
                         "3GPP Release 10"
@@ -171,7 +171,7 @@ export const iotModuleProducts: iotModuleProductTypes[] = [
 
                 {
                     name: "CQ10",
-                    imgUrl: "",
+                    imgUrl: "/images/chips/CQ10.webp",
                     types: [
                         "LTE Cat 1",
                         "2G",
@@ -236,7 +236,7 @@ export const iotModuleProducts: iotModuleProductTypes[] = [
 
                 {
                     name: "C11QM",
-                    imgUrl: "",
+                    imgUrl: "/images/chips/C11QM.webp",
                     types: [
                         "LTE Cat 1",
                         "2G",
@@ -403,7 +403,7 @@ export const iotModuleProducts: iotModuleProductTypes[] = [
             chip: [
                 {
                     name: "CQ16",
-                    imgUrl: "",
+                    imgUrl: "/images/chips/CQ16.webp",
                     types: [
                         "LTE Cat 1bis",
                         "3GPP Release 14"
@@ -452,7 +452,7 @@ export const iotModuleProducts: iotModuleProductTypes[] = [
 
                 {
                     name: "C16QS",
-                    imgUrl: "",
+                    imgUrl: "/images/chips/C16QS.webp",
                     types: [
                         "LTE Cat 1bis",
                         "3GPP Release 14"
@@ -528,10 +528,10 @@ export const iotModuleProducts: iotModuleProductTypes[] = [
 
             chip: [
                 {
-                    name: "CQ20",
-                    imgUrl: "",
+                    name: "C20Q",
+                    imgUrl: "/images/chips/C20QM.webp",
                     types: [
-                        "LTE Cat 4",
+                        "LTE Cat 4",    
                         "3GPP Release 10"
                     ],
 
@@ -592,7 +592,7 @@ export const iotModuleProducts: iotModuleProductTypes[] = [
 
                 {
                     name: "C20QM",
-                    imgUrl: "",
+                    imgUrl: "/images/chips/C20QM.webp",
                     types: [
                         "LTE Cat 4",
                         "3GPP Release 10"
@@ -657,7 +657,7 @@ export const iotModuleProducts: iotModuleProductTypes[] = [
 
                 {
                     name: "CQS290",
-                    imgUrl: "",
+                    imgUrl: "/images/chips/CQS290.webp",
                     types: [
                         "LTE Cat 4",
                         "3GPP Release 10"
@@ -720,7 +720,7 @@ export const iotModuleProducts: iotModuleProductTypes[] = [
 
                 {
                     name: "CQS291",
-                    imgUrl: "",
+                    imgUrl: "/images/chips/CQS291.webp",
                     types: [
                         "LTE Cat 4",
                         "3GPP Release 10"
@@ -785,7 +785,7 @@ export const iotModuleProducts: iotModuleProductTypes[] = [
 
                 {
                     name: "CQS292",
-                    imgUrl: "",
+                    imgUrl: "/images/chips/CQS292.webp",
                     types: [
                         "LTE Cat 4",
                         "3GPP Release 10"
@@ -850,7 +850,7 @@ export const iotModuleProducts: iotModuleProductTypes[] = [
 
                 {
                     name: "CQS315",
-                    imgUrl: "",
+                    imgUrl: "/images/chips/CQS315.webp",
                     types: [
                         "LTE Cat 4",
                         "3GPP Release 10"

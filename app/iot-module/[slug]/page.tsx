@@ -67,7 +67,7 @@ function ChipCard({ chip, productImage }: { chip: IotModuleChip; productImage: s
         </div>
 
         {/* Chip image */}
-        <div className="relative shrink-0 h-20 w-20 rounded-xl overflow-hidden border border-[#E5DCEE] bg-white">
+        <div className="relative shrink-0 h-40 w-40 rounded-xl overflow-hidden border border-[#E5DCEE] bg-white">
           <Image
             src={chip.imgUrl || productImage}
             alt={chip.name}
