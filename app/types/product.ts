@@ -20,3 +20,11 @@ export interface Product {
     value: string;
   }[];
 }
+
+export interface iotModuleProductTypes {
+  id: number;
+  name: string;
+  subtitle: string;
+  desc: string;
+  imageLink: string;
+}

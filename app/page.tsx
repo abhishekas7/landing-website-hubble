@@ -4,6 +4,7 @@ import ProductSection from "./components/ProductSection";
 import { products } from "./data/product";
 import ConsultSection from "./components/ConsultSection";
 import WhatWeDo from "./components/WhatWeDo";
+import IotModules from "./components/IotModules";
 
 export default function HomePage() {
   return (
@@ -18,7 +19,7 @@ export default function HomePage() {
       <WhatWeDo />
       {/* what is cavli */}
   
-
+      <IotModules />
       {/* PRODUCT SECTION */}
       <ProductSection products={products} />
       <ConsultSection />
