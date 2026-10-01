@@ -13,25 +13,7 @@ import {
 } from "../types/consult";
 import { EMAIL_REGEX } from "../constants/regex";
 import { apiService } from "../services/apiService";
-
-
-function formatSlot(iso: string) {
-  return new Intl.DateTimeFormat("en-IN", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-    timeZone: "Asia/Kolkata",
-  }).format(new Date(iso));
-}
-
-function getTodayISO() {
-  const d = new Date();
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0, 10);
-}
+import { formatSlot, getTodayISO } from "../utils/consultUtils";
 
 // ── Inline status banner ──────────────────────────────────────────────────────
 

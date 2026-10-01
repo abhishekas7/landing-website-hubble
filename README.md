@@ -133,32 +133,54 @@ The app service connects to the DB using `DB_HOST=db`, which Docker resolves to 
 
 ## Environment Variables
 
-Create `.env` at the project root (it is git-ignored by default):
+Create `.env` at the project root (it is git-ignored by default). Copy `.env.example` as a starting point:
+
+```bash
+cp .env.example .env
+```
+
+### Full reference
 
 ```env
 # ── Application ──────────────────────────────────────────
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
 # ── PostgreSQL ───────────────────────────────────────────
-DB_HOST=localhost        # Use "db" when running inside Docker Compose
-DB_PORT=5432
-DB_NAME=hubble
-DB_USER=postgres
-DB_PASSWORD=your_secure_password
-```
-
-Commit `.env.example` as a safe, secret-free template:
-
-```env
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
+# Local dev: use "localhost"
+# Docker Compose: use "db" (resolves to the db service)
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=hubble
 DB_USER=postgres
-DB_PASSWORD=
+DB_PASSWORD=your_secure_password
+
+# ── Google Calendar (consultation booking) ────────────────
+# 1. Create an OAuth 2.0 Client ID at https://console.cloud.google.com
+# 2. Add http://localhost:3000/api/auth/google as an Authorized Redirect URI
+# 3. Visit http://localhost:3000/api/auth/google to start the OAuth flow
+# 4. Copy the refresh_token from the JSON response and paste it below
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REFRESH_TOKEN=
+
+# Calendar settings
+GOOGLE_CALENDAR_ID=primary           # or a specific calendar ID
+GOOGLE_CALENDAR_TIMEZONE=Asia/Kolkata
+
+# Slot configuration
+CONSULTATION_DURATION=30             # slot length in minutes
+CONSULTATION_START_HOUR=10           # working day start (24h)
+CONSULTATION_END_HOUR=18             # working day end   (24h)
+
+# ── SMTP (confirmation emails) ────────────────────────────
+# Gmail example: generate an App Password at myaccount.google.com/apppasswords
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=you@gmail.com
+SMTP_PASSWORD=                        # 16-char Gmail App Password
 ```
 
-> **Docker note:** When running via `docker compose`, set `DB_HOST=db` so the app container resolves to the `db` service. The Compose file already does this automatically; you only need the correct `DB_*` credential values.
+> **Docker note:** When running via `docker compose`, set `DB_HOST=db` so the app container resolves to the `db` service. The Compose file already does this automatically.
 
 ---
 
@@ -302,7 +324,7 @@ Navigation items scraped from the catalogue site's top nav bar. These are read b
 
 #### `consultations`
 
-Stores contact/consultation requests submitted via the **"Talk to us"** form on the landing page. This table is **not** part of `initDatabase()` — it is created automatically (lazily) on the first `POST /api/consult` call.
+Stores consultation booking requests submitted via the **"Book a Consultation"** form. Created lazily on the first `POST /api/consult` call — no manual migration needed.
 
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
@@ -312,11 +334,16 @@ Stores contact/consultation requests submitted via the **"Talk to us"** form on 
 | `phone` | `VARCHAR(50)` | — | Optional phone number |
 | `company` | `VARCHAR(255)` | — | Optional company / organisation |
 | `message` | `TEXT` | `NOT NULL` | The enquiry or message body |
+| `slot_time` | `TIMESTAMPTZ` | — | Selected consultation time slot (UTC) |
+| `event_id` | `TEXT` | — | Google Calendar event ID (if created) |
+| `meet_link` | `TEXT` | — | Google Meet join URL (if created) |
+| `calendar_link` | `TEXT` | — | "Add to calendar" deep-link |
 | `created_at` | `TIMESTAMP` | `DEFAULT CURRENT_TIMESTAMP` | UTC timestamp of submission |
 
 **Validation** (enforced in the API before any DB write):
 - `name`, `email`, and `message` are **required** — returns `400` if missing.
-- `email` is validated against a basic RFC-style regex — returns `400` on bad format.
+- `email` is validated against a basic RFC-style regex.
+- `slotTime` must be a valid ISO date and must not be in the past.
 - `phone` and `company` are optional and stored as `NULL` when omitted.
 
 ---
@@ -399,11 +426,65 @@ All inserts use `ON CONFLICT ... DO UPDATE` (upsert) or `DO NOTHING`. Running th
 
 ---
 
-## Consult / Contact Form API
+## Consult / Booking API
 
-The `POST /api/consult` endpoint handles form submissions from the **ConsultSection** component. It lazily creates the `consultations` table on first use.
+The consultation flow is split across three API routes.
 
-### Request
+---
+
+### `GET /api/auth/google` — Start OAuth flow
+
+Redirects to Google's consent screen. After approval, Google calls back with a `?code=...` parameter which this same route exchanges for tokens and returns as JSON.
+
+**One-time setup:**
+1. Visit `http://localhost:3000/api/auth/google` in your browser
+2. Sign in with the Google account that owns the target calendar
+3. Copy `refresh_token` from the JSON response
+4. Paste it into `GOOGLE_REFRESH_TOKEN` in `.env`
+5. Restart the dev server
+
+> Your Google Cloud app must be in **Testing** mode with your email added as a test user (Google Cloud Console → OAuth consent screen → Test users).
+
+---
+
+### `GET /api/consult/slots` — Fetch available slots
+
+Returns available 30-minute time slots for a given date, excluding slots already blocked by events on Google Calendar.
+
+```bash
+curl "http://localhost:3000/api/consult/slots?date=2026-10-05"
+```
+
+**Query parameters:**
+
+| Param | Required | Description |
+|-------|----------|-------------|
+| `date` | yes | `YYYY-MM-DD` — the date to fetch slots for |
+
+**Success response (`200`):**
+```json
+{
+  "success": true,
+  "slots": [
+    "2026-10-05T10:00:00.000+05:30",
+    "2026-10-05T10:30:00.000+05:30"
+  ]
+}
+```
+
+**Error — Google Calendar not configured (`200` with warning):**
+```json
+{
+  "success": false,
+  "error": "Google Calendar is not yet configured. Please add a valid GOOGLE_REFRESH_TOKEN to your .env file."
+}
+```
+
+---
+
+### `POST /api/consult` — Submit a booking
+
+Validates the request, creates a Google Calendar event with a Meet link, persists the booking to the `consultations` table, and sends a confirmation email.
 
 ```bash
 curl -X POST http://localhost:3000/api/consult \
@@ -413,43 +494,49 @@ curl -X POST http://localhost:3000/api/consult \
     "email": "jane@example.com",
     "phone": "+91 98765 43210",
     "company": "Acme IoT",
-    "message": "We are interested in Hubble connectivity solutions."
+    "message": "Interested in Hubble connectivity.",
+    "slotTime": "2026-10-05T10:00:00.000Z"
   }'
 ```
+
+**Request fields:**
 
 | Field | Required | Notes |
 |-------|----------|-------|
 | `name` | yes | Trimmed; `400` if blank |
 | `email` | yes | Validated with regex; `400` if invalid |
 | `message` | yes | Trimmed; `400` if blank |
-| `phone` | No | Stored as `NULL` if omitted |
-| `company` | No | Stored as `NULL` if omitted |
+| `slotTime` | yes | ISO 8601 datetime; `400` if in the past |
+| `phone` | no | Stored as `NULL` if omitted |
+| `company` | no | Stored as `NULL` if omitted |
 
-### Success Response (`201`)
+**Success response (`201`):**
 
 ```json
 {
   "success": true,
-  "message": "Consultation submitted successfully",
+  "message": "Consultation booked successfully",
   "data": {
     "id": 1,
     "name": "Jane Doe",
     "email": "jane@example.com",
-    "phone": "+91 98765 43210",
-    "company": "Acme IoT",
-    "message": "We are interested in Hubble connectivity solutions.",
-    "created_at": "2026-09-29T04:30:00.000Z"
+    "slot_time": "2026-10-05T10:00:00.000Z",
+    "event_id": "abc123xyz",
+    "meet_link": "https://meet.google.com/xxx-yyyy-zzz",
+    "calendar_link": "https://calendar.google.com/...",
+    "created_at": "2026-10-02T00:00:00.000Z"
   }
 }
 ```
 
-### Error Responses
+**Error responses:**
 
 | Status | Condition |
 |--------|-----------|
-| `400` | Missing required field (`name`, `email`, or `message`) |
+| `400` | Missing required field (`name`, `email`, `message`, or `slotTime`) |
 | `400` | Malformed email address |
-| `500` | Database / server error |
+| `400` | `slotTime` is invalid or in the past |
+| `500` | Database / server error (see `detail` field for debug info) |
 
 ---
 
@@ -460,23 +547,34 @@ landing-website-hubble/
 │
 ├── app/
 │   ├── api/
-│   │   ├── consult/                   # Contact/consult form API
+│   │   ├── auth/
+│   │   │   └── google/
+│   │   │       └── route.ts           # GET — OAuth flow to get refresh token
+│   │   ├── consult/
+│   │   │   ├── route.ts               # POST — validate, calendar event, DB save, email
+│   │   │   └── slots/
+│   │   │       └── route.ts           # GET  — available slots (excludes calendar busy times)
 │   │   └── scrape/
 │   │       └── exhibitors/
 │   │           └── route.ts           # GET (read DB) / POST (scrape + save)
 │   │
 │   ├── components/
 │   │   ├── Banner.tsx                 # Hero banner
-│   │   ├── ConsultSection.tsx         # "Talk to us" CTA section
+│   │   ├── ConsultSection.tsx         # "Book a Consultation" section
+│   │   ├── Consultform.tsx            # Multi-step booking form (form → slots → confirmed)
 │   │   ├── Header.tsx                 # Top announcement bar
 │   │   ├── Navbar.tsx                 # Nav populated from DB via layout.tsx
 │   │   └── ProductSection.tsx         # Product card grid
 │   │
-│   ├── constants/                     # Shared constants
+│   ├── constants/                     # Shared constants (regex, etc.)
 │   ├── data/                          # Static data (products, etc.)
 │   │
 │   ├── lib/
+│   │   ├── consult-slot.ts            # getAvailableSlots() — busy-time logic
+│   │   ├── create-consult-event.ts    # createConsultEvent() — Calendar API call
 │   │   ├── db.ts                      # pg.Pool singleton (shared DB client)
+│   │   ├── email.ts                   # sendConsultConfirmation() — SMTP mailer
+│   │   ├── google-calender.ts         # Authenticated Google OAuth2 client
 │   │   └── scraper/
 │   │       ├── exhibitors.ts          # Playwright scrape logic
 │   │       └── db/
@@ -489,7 +587,11 @@ landing-website-hubble/
 │   │   └── apiService.ts             # Typed fetch() wrapper (.get / .post)
 │   │
 │   ├── types/
+│   │   ├── consult.ts                # ConsultFormData, ConsultResponse, SlotsResponse …
 │   │   └── navbar.ts                 # NavItem { label: string; href: string }
+│   │
+│   ├── utils/
+│   │   └── consultUtils.ts           # formatSlot(), getTodayISO() — shared date helpers
 │   │
 │   ├── layout.tsx                    # Root layout — fetches navLinks server-side
 │   └── page.tsx                      # Home page
