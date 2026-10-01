@@ -1,78 +1,70 @@
-import { calendar, CALENDAR_ID, TIME_ZONE } from "./google-calendar";
+import { NextResponse } from "next/server";
+import { getAvailableSlots } from "@/app/lib/consult-slot";
 
-const DURATION = Number(
-  process.env.CONSULTATION_DURATION || 30
-);
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const date = searchParams.get("date");
 
-const START_HOUR = Number(
-  process.env.CONSULTATION_START_HOUR || 10
-);
-
-const END_HOUR = Number(
-  process.env.CONSULTATION_END_HOUR || 18
-);
-
-export async function getAvailableSlots(date: string) {
-  const start = new Date(`${date}T00:00:00+05:30`);
-  const end = new Date(`${date}T23:59:59+05:30`);
-
-  const response = await calendar.freebusy.query({
-    requestBody: {
-      timeMin: start.toISOString(),
-      timeMax: end.toISOString(),
-      timeZone: TIME_ZONE,
-      items: [
-        {
-          id: CALENDAR_ID,
-        },
-      ],
-    },
-  });
-
-  const busy =
-    response.data.calendars?.[CALENDAR_ID]?.busy || [];
-
-  const slots: string[] = [];
-
-  const current = new Date(start);
-  current.setHours(START_HOUR, 0, 0, 0);
-
-  const closing = new Date(start);
-  closing.setHours(END_HOUR, 0, 0, 0);
-
-  while (current < closing) {
-    const slotStart = new Date(current);
-
-    const slotEnd = new Date(
-      current.getTime() + DURATION * 60 * 1000
-    );
-
-    if (slotEnd > closing) {
-      break;
-    }
-
-    const isBusy = busy.some((period) => {
-      if (!period.start || !period.end) {
-        return false;
-      }
-
-      const busyStart = new Date(period.start);
-      const busyEnd = new Date(period.end);
-
-      return (
-        slotStart < busyEnd &&
-        slotEnd > busyStart
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return NextResponse.json(
+        { success: false, error: "A valid date (YYYY-MM-DD) is required" },
+        { status: 400 }
       );
-    });
-
-    if (!isBusy) {
-      slots.push(slotStart.toISOString());
     }
 
-    current.setMinutes(
-      current.getMinutes() + DURATION
+    // Don't allow booking in the past (compare date strings, timezone-safe)
+    const todayStr = new Date()
+      .toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // "YYYY-MM-DD"
+    if (date < todayStr) {
+      return NextResponse.json(
+        { success: false, error: "Cannot fetch slots for a past date" },
+        { status: 400 }
+      );
+    }
+
+    // Check that Google Calendar credentials are configured
+    if (
+      !process.env.GOOGLE_CLIENT_ID ||
+      !process.env.GOOGLE_CLIENT_SECRET ||
+      !process.env.GOOGLE_REFRESH_TOKEN ||
+      process.env.GOOGLE_REFRESH_TOKEN.includes("xxxx")
+    ) {
+      console.warn("[slots] Google Calendar credentials not configured – returning empty slots.");
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Google Calendar is not yet configured. Please add a valid GOOGLE_REFRESH_TOKEN to your .env file.",
+        },
+        { status: 503 }
+      );
+    }
+
+    const slots = await getAvailableSlots(date);
+
+    return NextResponse.json({ success: true, slots }, { status: 200 });
+  } catch (error: unknown) {
+    console.error("[slots] Error:", error);
+
+    // Surface a readable message for common Google API errors
+    const errMsg =
+      error instanceof Error ? error.message : String(error);
+
+    if (errMsg.includes("invalid_grant") || errMsg.includes("Invalid Credentials")) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Google Calendar authentication failed. Your refresh token may be expired or invalid. Re-run the OAuth flow to get a new one.",
+        },
+        { status: 503 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch available slots. Please try again." },
+      { status: 500 }
     );
   }
-
-  return slots;
 }
