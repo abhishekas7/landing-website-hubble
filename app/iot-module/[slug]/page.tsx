@@ -17,6 +17,7 @@ import {
   RiStarLine,
 } from "react-icons/ri";
 import { IotModuleChip } from "@/app/types/product";
+import ProductDescriptionComponent from "@/app/components/ProductDescriptionComponent";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -26,9 +27,9 @@ function getProductBySlug(slug: string) {
   return iotModuleProducts.find((p) => toIotSlug(p.name) === slug);
 }
 
-export async function generateStaticParams() {
-  return iotModuleProducts.map((p) => ({ slug: toIotSlug(p.name) }));
-}
+// export async function generateStaticParams() {
+//   return iotModuleProducts.map((p) => ({ slug: toIotSlug(p.name) }));
+// }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -196,9 +197,7 @@ export default async function IotModuleDetailPage({ params }: PageProps) {
                 {detailsView.title}
               </h1>
 
-              <p className="text-base sm:text-lg text-[#756383] font-inter leading-relaxed">
-                {detailsView.des}
-              </p>
+              <ProductDescriptionComponent desc={detailsView.des}/>
 
               {/* What is */}
               <div className="rounded-xl bg-white border border-[#E5DCEE] p-5 shadow-sm">
